@@ -1,0 +1,35 @@
+body{
+	color: #E8C12F;
+	background: #8A99A6;
+}
+
+a:link, a:visited{
+	
+	color: #E23930;
+	
+}
+
+.LeftNav{
+	color: #E8C12F;
+	text-align: left;
+	font-size: 20pt;
+	width: 150px;
+	border: 0px solid black;
+}
+
+.gameButton{
+	width: 800px;
+	height: 50px;
+	display: block;
+	margin: auto;
+	margin-top: 10px;
+	font-family: Arial, sans-serif;
+	font-size: 30px;
+	font-weight: bold;
+	background-color: #F4F6F4;
+	cursor: pointer;
+}
+
+.mainContent{
+	text-align: center;
+}
