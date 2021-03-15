@@ -54,7 +54,7 @@
                 this.playerWidth, this.playerHeight);
             }
 
-            // Calculate where the player will move based off input, then move player
+            // Calculate where the player will move based tile input, then move player
             MovePlayer() {
                 for (var key in keysDown) {
                     var value = Number(key);
@@ -74,11 +74,43 @@
 
                 this.playerY -= gravity;
             }
+
+            PlayerCollisions(obj) {
+                // Player Right to Object Left
+                if (this.playerY + this.playerWidth <= obj.tileY + 1 &&
+                    this.playerY + this.playerWidth >= obj.tileY &&
+                    this.playerX < obj.tileX + obj.tileHeight &&
+                    this.playerHeight + this.playerX > obj.tileX) {
+                        this.playerX = obj.tileX - this.playerWidth;
+                }
+                // Player Left to Object Right
+                if (this.playerY >= obj.tileY + obj.tileWidth - 1 &&
+                    this.playerY <= obj.tileY + obj.tileWidth &&
+                    this.playerX < obj.tileX + obj.tileHeight &&
+                    this.playerHeight + this.playerX > obj.tileX) {
+                        this.playerX = obj.tileX + obj.tileWidth;
+                }
+                // Player Bottom to Object Top
+                if (this.playerY < obj.tileY + obj.tileWidth &&
+                    this.playerY + this.playerWidth > obj.tileY &&
+                    this.playerX + this.playerHeight >= obj.tileX &&
+                    this.playerX + this.playerHeight <= obj.tileX + 1) {
+                        this.playerY = obj.tileY - this.playerHeight;
+                }
+                // Player Top to Object Bottom
+                if (this.playerY < obj.tileY + obj.tileWidth &&
+                    this.playerY + this.playerWidth > obj.tileY &&
+                    this.playerX <= obj.tileX + obj.tileHeight &&
+                    this.playerX >= obj.tileX + obj.tileHeight - 1) {
+                        this.playerY = obj.tileY + obj.tileHeight;
+                }
+            }
         }
 
         var player = new Player(50, 50, 80, 100, 4);
 
         class Tile {
+            // This will come back to bite me, make it for instansiating any object
             constructor(tileImage, tileX, tileY, tileWidth, tileHeight) {
                 this.tileImage = tileImage;
                 this.tileX = tileX;
@@ -93,7 +125,7 @@
             }
 
             // Handle collisions with the tiles
-            TileCollisions(plr) {
+            /*TileCollisions(plr) {
 
                 // Right side
                 if(plr.playerX < this.tileX + this.tileWidth &&
@@ -103,9 +135,9 @@
                 plr.playerY + plr.playerHeight > this.tileY &&
                 // Bottom side
                 plr.playerY < this.tileY + this.tileHeight) {
-                        plr.playerY = this.tileY - plr.playerHeight;
+                    plr.playerY = this.tileY - plr.playerHeight;
                 }
-            }
+            }*/
         }
 
         var tileArray = [];
@@ -135,7 +167,7 @@
 
         function HandleCollisions() {
             for(var i = 0; i <= tileArray.length - 1; i++){
-                tileArray[i].TileCollisions(player);
+                player.PlayerCollisions(tileArray[i]);
             }
         }
 
