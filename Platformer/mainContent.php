@@ -40,48 +40,48 @@
 
         // Classes
         // Put classes and thing into other files
-        class Player {
-            constructor(playerX, playerY, playerWidth, playerHeight, playerSpeed){
-                this.playerX = playerX;
-                this.playerY = playerY;
-                this.playerWidth = playerWidth;
-                this.playerHeight = playerHeight;
-                this.playerSpeed = playerSpeed;
+        class Object {
+            constructor(objX, objY, objWidth, objHeight, objImage) {
+                this.x = objX;
+                this.y = objY
+                this.width = objWidth;
+                this.height = objHeight;
+                this.image = objImage;
             }
 
-            DrawPlayer() {
-                ctx.drawImage(playerImage, this.playerX, this.playerY,
-                this.playerWidth, this.playerHeight);
+            DrawObject() {
+                ctx.drawImage(this.image, this.x, this.y,
+                this.width, this.height);
             }
 
-            // Calculate where the player will move based tile input, then move player
-            MovePlayer() {
-                for (var key in keysDown) {
-                    var value = Number(key);
-
-				    if (value == 37) {	
-                        this.playerX -= this.playerSpeed;
-                    } 
-                        
-                    if (value == 39) {
-                        this.playerX += this.playerSpeed;
-                    }
-
-                    if (value == 32) {
-                        this.playerY -= 30;
-                    }
+            // Handle collisions with the tiles
+            TileCollisions(obj) {
+                // Player Bottom to Object Top
+                if (this.playerY < obj.tileY + obj.tileWidth &&
+                    this.playerY + this.playerWidth > obj.tileY &&
+                    this.playerX + this.playerHeight >= obj.tileX &&
+                    this.playerX + this.playerHeight <= obj.tileX + 1) {
+                    this.playerY = obj.tileY - this.playerHeight;
+                        console.log("top tile");
+                        console.log(this.playerX + " " + this.playerY);
                 }
-
-                this.playerY -= gravity;
-            }
-
-            PlayerCollisions(obj) {
+                // Player Top to Object Bottom
+                if (this.playerY < obj.tileY + obj.tileWidth &&
+                    this.playerY + this.playerWidth > obj.tileY &&
+                    this.playerX <= obj.tileX + obj.tileHeight &&
+                    this.playerX >= obj.tileX + obj.tileHeight - 1) {
+                    this.playerY = obj.tileY + obj.tileHeight;
+                        console.log("bottom tile");
+                        console.log(this.playerX + " " + this.playerY);
+                }
                 // Player Right to Object Left
                 if (this.playerY + this.playerWidth <= obj.tileY + 1 &&
                     this.playerY + this.playerWidth >= obj.tileY &&
                     this.playerX < obj.tileX + obj.tileHeight &&
                     this.playerHeight + this.playerX > obj.tileX) {
                         this.playerX = obj.tileX - this.playerWidth;
+						console.log("left tile");
+                        console.log(this.playerX + " " + this.playerY);
                 }
                 // Player Left to Object Right
                 if (this.playerY >= obj.tileY + obj.tileWidth - 1 &&
@@ -89,13 +89,62 @@
                     this.playerX < obj.tileX + obj.tileHeight &&
                     this.playerHeight + this.playerX > obj.tileX) {
                         this.playerX = obj.tileX + obj.tileWidth;
+                        console.log("right tile");
+                        console.log(this.playerX + " " + this.playerY);
                 }
-                // Player Bottom to Object Top
+            }
+        }
+
+        class Player extends Object{
+            constructor(playerX, playerY, playerWidth, playerHeight, playerSpeed, playerImage){
+                super(playerX, playerY, playerWidth, playerHeight, playerImage);
+                this.playerSpeed = playerSpeed;
+            }
+
+            DrawPlayer() {
+                ctx.drawImage(playerImage, this.x, this.y,
+                this.width, this.height);
+            }
+
+            // Calculate where the player will move based tile input, then move player
+            MovePlayer() {
+				
+                this.y -= gravity;
+				
+                for (var key in keysDown) {
+                    var value = Number(key);
+
+				    if (value == 37) {	
+                        this.x -= this.playerSpeed;
+                    } 
+                        
+                    if (value == 39) {
+                        this.x += this.playerSpeed;
+                    }
+
+                    if (value == 38) {
+                        this.y -= this.playerSpeed;
+                    }
+
+                    if (value == 40) {
+                        this.y += this.playerSpeed;
+                    }
+
+                    if (value == 32) {
+                        this.y -= 30;
+                    }
+                }
+            }
+
+            /*PlayerCollisions(obj) {
+				// Player Bottom to Object Top
                 if (this.playerY < obj.tileY + obj.tileWidth &&
                     this.playerY + this.playerWidth > obj.tileY &&
                     this.playerX + this.playerHeight >= obj.tileX &&
                     this.playerX + this.playerHeight <= obj.tileX + 1) {
                         this.playerY = obj.tileY - this.playerHeight;
+                        console.log("top tile");
+                        console.log(this.playerX + " " + this.playerY);
                 }
                 // Player Top to Object Bottom
                 if (this.playerY < obj.tileY + obj.tileWidth &&
@@ -103,41 +152,84 @@
                     this.playerX <= obj.tileX + obj.tileHeight &&
                     this.playerX >= obj.tileX + obj.tileHeight - 1) {
                         this.playerY = obj.tileY + obj.tileHeight;
+                        console.log("bottom tile");
+                        console.log(this.playerX + " " + this.playerY);
                 }
-            }
+                // Player Right to Object Left
+                if (this.playerY + this.playerWidth <= obj.tileY + 1 &&
+                    this.playerY + this.playerWidth >= obj.tileY &&
+                    this.playerX < obj.tileX + obj.tileHeight &&
+                    this.playerHeight + this.playerX > obj.tileX) {
+                        this.playerX = obj.tileX - this.playerWidth;
+						console.log("left tile");
+                        console.log(this.playerX + " " + this.playerY);
+                }
+                // Player Left to Object Right
+                if (this.playerY >= obj.tileY + obj.tileWidth - 1 &&
+                    this.playerY <= obj.tileY + obj.tileWidth &&
+                    this.playerX < obj.tileX + obj.tileHeight &&
+                    this.playerHeight + this.playerX > obj.tileX) {
+                        this.playerX = obj.tileX + obj.tileWidth;
+                        console.log("right tile");
+                        console.log(this.playerX + " " + this.playerY);
+                }
+				
+				//console.log(this.playerX + " " + this.playerY);
+            }*/
         }
 
-        var player = new Player(50, 50, 80, 100, 4);
+        var player = new Player(50, 50, 80, 100, 4, playerImage);
 
-        class Tile {
-            // This will come back to bite me, make it for instansiating any object
+        class Tile extends Object{
             constructor(tileImage, tileX, tileY, tileWidth, tileHeight) {
+                super(tileX, tileY, tileWidth, tileHeight);
                 this.tileImage = tileImage;
-                this.tileX = tileX;
-                this.tileY = tileY;
-                this.tileWidth = tileWidth;
-                this.tileHeight = tileHeight;
             }
 
             DrawTile() {
-                ctx.drawImage(this.tileImage, this.tileX, this.tileY,
-                this.tileWidth, this.tileHeight);
+                ctx.drawImage(this.tileImage, this.x, this.y,
+                this.width, this.height);
             }
 
             // Handle collisions with the tiles
-            /*TileCollisions(plr) {
-
-                // Right side
-                if(plr.playerX < this.tileX + this.tileWidth &&
-                // Left side
-                plr.playerX + plr.playerWidth > this.tileX &&
-                // Top side
-                plr.playerY + plr.playerHeight > this.tileY &&
-                // Bottom side
-                plr.playerY < this.tileY + this.tileHeight) {
-                    plr.playerY = this.tileY - plr.playerHeight;
+            TileCollisions(plr) {
+                // Player Bottom to Object Top
+                if (this.playerY < obj.tileY + obj.tileWidth &&
+                    this.playerY + this.playerWidth > obj.tileY &&
+                    this.playerX + this.playerHeight >= obj.tileX &&
+                    this.playerX + this.playerHeight <= obj.tileX + 1) {
+                    this.playerY = obj.tileY - this.playerHeight;
+                        console.log("top tile");
+                        console.log(this.playerX + " " + this.playerY);
                 }
-            }*/
+                // Player Top to Object Bottom
+                if (this.playerY < obj.tileY + obj.tileWidth &&
+                    this.playerY + this.playerWidth > obj.tileY &&
+                    this.playerX <= obj.tileX + obj.tileHeight &&
+                    this.playerX >= obj.tileX + obj.tileHeight - 1) {
+                    this.playerY = obj.tileY + obj.tileHeight;
+                        console.log("bottom tile");
+                        console.log(this.playerX + " " + this.playerY);
+                }
+                // Player Right to Object Left
+                if (this.playerY + this.playerWidth <= obj.tileY + 1 &&
+                    this.playerY + this.playerWidth >= obj.tileY &&
+                    this.playerX < obj.tileX + obj.tileHeight &&
+                    this.playerHeight + this.playerX > obj.tileX) {
+                        this.playerX = obj.tileX - this.playerWidth;
+						console.log("left tile");
+                        console.log(this.playerX + " " + this.playerY);
+                }
+                // Player Left to Object Right
+                if (this.playerY >= obj.tileY + obj.tileWidth - 1 &&
+                    this.playerY <= obj.tileY + obj.tileWidth &&
+                    this.playerX < obj.tileX + obj.tileHeight &&
+                    this.playerHeight + this.playerX > obj.tileX) {
+                        this.playerX = obj.tileX + obj.tileWidth;
+                        console.log("right tile");
+                        console.log(this.playerX + " " + this.playerY);
+                }
+            }
         }
 
         var tileArray = [];
@@ -167,7 +259,7 @@
 
         function HandleCollisions() {
             for(var i = 0; i <= tileArray.length - 1; i++){
-                player.PlayerCollisions(tileArray[i]);
+                tileArray[i].TileCollisions(player);
             }
         }
 
