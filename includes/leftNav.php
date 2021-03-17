@@ -9,7 +9,7 @@ function printRows() {
 	$printString = "";
 	
 	foreach($directories as $Value) {
-		
+		if ($Value == "README.md") {continue;}
 		if(ctype_upper(substr($Value,0,1)) == true) {
 			
 			$wordArray = preg_split('/(?=[A-Z])/', $Value);
