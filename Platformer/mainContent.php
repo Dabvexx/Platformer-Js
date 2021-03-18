@@ -57,41 +57,70 @@
             // Handle collisions with the tiles
             Collisions(obj) {
                 // Player Bottom to Object Top
-                if (this.y < obj.y + obj.width &&
-                    this.x + this.width > obj.y &&
-                    this.x + this.height >= obj.x &&
-                    this.x + this.height <= obj.x + 1) {
+                if (this.x < obj.x + obj.width &&
+                    this.x + this.width > obj.x &&
+                    this.y + this.height >= obj.y &&
+                    this.y + this.height <= obj.y + 1) {
                         this.y = obj.y - this.height;
                         console.log("top");
                         console.log(this.x + " " + this.y);
                 }
                 // Player Top to Object Bottom
-                if (this.y < obj.y + obj.width &&
-                    this.y + this.width > obj.y &&
-                    this.x <= obj.x + obj.height &&
-                    this.x >= obj.x + obj.height - 1) {
+                if (this.x < obj.x + obj.width &&
+                    this.x + this.width > obj.x &&
+                    this.y <= obj.y + obj.height &&
+                    this.y >= obj.y + obj.height - 1) {
                         this.y = obj.y + obj.height;
                         console.log("bottom");
-                        console.log(this.x + " " + y);
+                        console.log(this.x + " " + this.y);
                 }
                 // Player Right to Object Left
-                if (this.y + this.width <= obj.y + 1 &&
-                    this.y + this.width >= obj.y &&
-                    this.x < obj.x + obj.height &&
-                    this.height + this.x > obj.x) {
-                        this.x = obj.x - this.width;
+                if (this.x + this.width <= obj.x + 1 &&
+                    this.x + this.width >= obj.x &&
+                    this.y < obj.y + obj.height &&
+                    this.height + this.y > obj.y) {
+                        this.x = obj.x + obj.width;
 						console.log("left");
                         console.log(this.x + " " + this.y);
                 }
                 // Player Left to Object Right
-                if (this.y >= obj.y + obj.width - 1 &&
-                    this.y <= obj.y + obj.width &&
-                    this.x < obj.x + obj.height &&
-                    this.height + this.x > obj.x) {
-                        this.x = obj.x + obj.width;
+                if (this.x >= obj.x + obj.width - 1 &&
+                    this.x <= obj.x + obj.width &&
+                    this.y < obj.y + obj.height &&
+                    this.height + this.y > obj.y) {
+                        this.x = obj.x - this.width;
                         console.log("right");
                         console.log(this.x + " " + this.y);        
                 }
+
+                /*// Player Right to Object Left
+                if (player.offsetLeft + player.offsetWidth <= object[i].offsetLeft + 1 &&
+                    player.offsetLeft + player.offsetWidth >= object[i].offsetLeft &&
+                    player.offsetTop < object[i].offsetTop + object[i].offsetHeight &&
+                    player.offsetHeight + player.offsetTop > object[i].offsetTop) {
+                player.style.left = object[i].offsetLeft - player.offsetWidth + "px";   
+                }
+                // Player Left to Object Right
+                if (player.offsetLeft >= object[i].offsetLeft + object[i].offsetWidth - 1 &&
+                    player.offsetLeft <= object[i].offsetLeft + object[i].offsetWidth &&
+                    player.offsetTop < object[i].offsetTop + object[i].offsetHeight &&
+                    player.offsetHeight + player.offsetTop > object[i].offsetTop) {
+                player.style.left = object[i].offsetLeft + object[i].offsetWidth + "px";   
+                }
+                // Player Bottom to Object Top
+                if (player.offsetLeft < object[i].offsetLeft + object[i].offsetWidth &&
+                    player.offsetLeft + player.offsetWidth > object[i].offsetLeft &&
+                    player.offsetTop + player.offsetHeight >= object[i].offsetTop &&
+                    player.offsetTop + player.offsetHeight <= object[i].offsetTop + 1) {
+                player.style.top = object[i].offsetTop - player.offsetHeight + "px";   
+                }
+                // Player Top to Object Bottom
+                if (player.offsetLeft < object[i].offsetLeft + object[i].offsetWidth &&
+                    player.offsetLeft + player.offsetWidth > object[i].offsetLeft &&
+                    player.offsetTop <= object[i].offsetTop + object[i].offsetHeight &&
+                    player.offsetTop >= object[i].offsetTop + object[i].offsetHeight - 1) {
+                player.style.top = object[i].offsetTop + object[i].offsetHeight + "px";   
+                }*/
             }
         }
 
@@ -101,14 +130,12 @@
                 this.speed = speed;
             }
 
-            DrawPlayer() {
-                super.DrawObject();
-            }
-
             // Calculate where the player will move based tile input, then move player
             MovePlayer() {
 				
-                this.y -= gravity;
+                //this.y -= gravity;
+                this.y -= -4;
+                this.x -= -0.2;
 				
                 for (var key in keysDown) {
                     var value = Number(key);
@@ -136,25 +163,62 @@
             }
         }
 
-        var player = new Player(50, 50, 80, 100, 4, playerImage);
+        var player = new Player(50, 50, 80, 100, 8, playerImage);
 
         class Tile extends Object{
             constructor(tileImage, tileX, tileY, tileWidth, tileHeight) {
                 super(tileX, tileY, tileWidth, tileHeight, tileImage);
             }
-
-            DrawTile() {
-                super.DrawObject();
-            }
         }
 
         var tileArray = [];
 
-        for(var i = 1; i <= 2; i++) {
+        for(var i = 1; i <= 5; i++) {
             tileArray.push(new Tile(tileImage2, i * 1.6 * 50, canvas.height - 80, 80, 80));
         }
 
         tileArray.push(new Tile(tileImage1, 200, 400, 80, 80));
+
+        var stop = false;
+        var frameCount = 0;
+        var results = ("#results");
+        var fps, fpsInterval, startTime, now, then, elapsed;
+
+
+        // initialize the timer variables and start the animation
+
+        function startAnimating(fps) {
+            fpsInterval = 1000 / fps;
+            then = Date.now();
+            startTime = then;
+            animate();
+        }
+
+        // the animation loop calculates time elapsed since the last loop
+        // and only draws if your specified fps interval is achieved
+
+        function animate() {
+
+            // request another frame
+
+            requestAnimationFrame(animate);
+
+            // calc elapsed time since last loop
+
+            now = Date.now();
+            elapsed = now - then;
+
+            // if enough time has elapsed, draw the next frame
+
+            if (elapsed > fpsInterval) {
+
+                // Get ready for next frame by setting then=now, but also adjust for your
+                // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
+                then = now - (elapsed % fpsInterval);
+
+                GameLoop();
+            }
+        }
 
         function RenderFrame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -162,10 +226,10 @@
 
             //draw all the tiles
             for(var i = 0; i <= tileArray.length - 1; i++){
-                tileArray[i].DrawTile();
+                tileArray[i].DrawObject();
             }
 
-            player.DrawPlayer();
+            player.DrawObject();
         }
 
         function MoveObjects() {
@@ -175,18 +239,17 @@
 
         function HandleCollisions() {
             for(var i = 0; i <= tileArray.length - 1; i++){
-                tileArray[i].TileCollisions(player);
+                player.Collisions(tileArray[i]);
             }
         }
 
         function GameLoop() {
-            //HandleCollisions();
             MoveObjects();
+            HandleCollisions();
 
             RenderFrame();
-            frame = window.requestAnimationFrame(GameLoop);
         }
 
-        GameLoop();
+        startAnimating(60);
     </script>
 </table>
